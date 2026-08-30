@@ -5,7 +5,7 @@ const port = Number(process.env.PORT) || 3000;
 
 const pool = mysql.createPool({
   host: "173.105.29.213",
-  user: "musicblog",
+  user: "musicblog-cursor",
   password: "2805854Rs!",
   database: "musicblog",
   waitForConnections: true,
