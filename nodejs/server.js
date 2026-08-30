@@ -59,8 +59,13 @@ const server = http.createServer(async (req, res) => {
       res.end(rowsToHtml(rows));
     } catch (error) {
       console.error(error);
+      const message = error instanceof Error ? error.message : String(error);
+      const code = error && typeof error === "object" && "code" in error ? error.code : "";
+      const stack = error instanceof Error ? error.stack : "";
       res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
-      res.end("Database error\n");
+      res.end(
+        `Database error\n\n${code ? `code: ${code}\n` : ""}message: ${message}\n${stack ? `\n${stack}\n` : ""}`
+      );
     }
     return;
   }
