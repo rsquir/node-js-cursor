@@ -1,12 +1,7 @@
-import fs from "node:fs";
 import http from "node:http";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import mysql from "mysql2/promise";
 
 const port = Number(process.env.PORT) || 3000;
-const rootDir = path.dirname(fileURLToPath(import.meta.url));
-const artworkDir = path.join(rootDir, "artwork");
 
 const pool = mysql.createPool({
   host: "localhost",
@@ -74,7 +69,7 @@ function songBlock(row) {
 						<h1 class="num">${num}</h1>
 					</div>
 					<div class="col-sm-6 col-num-img">
-						<img class="rounded-2 border border-2" src="/artwork/${num}.jpg" alt="${title}"/>
+						<img class="rounded-2 border border-2" src="https://robertsquires.com/artwork/${num}.jpg" alt="${title}"/>
 					</div>
 				</div>
 				<div class="col-sm-8 text-col">
@@ -267,32 +262,7 @@ function rowsToBlog(rows) {
 </html>`;
 }
 
-function sendArtwork(req, res) {
-  const url = new URL(req.url, "http://localhost");
-  const match = url.pathname.match(/^\/artwork\/(\d{2})\.jpg$/);
-  if (!match) {
-    return false;
-  }
-
-  const filePath = path.join(artworkDir, `${match[1]}.jpg`);
-  fs.readFile(filePath, (error, data) => {
-    if (error) {
-      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-      res.end("Artwork not found\n");
-      return;
-    }
-
-    res.writeHead(200, { "Content-Type": "image/jpeg" });
-    res.end(data);
-  });
-  return true;
-}
-
 const server = http.createServer(async (req, res) => {
-  if (req.method === "GET" && sendArtwork(req, res)) {
-    return;
-  }
-
   if (req.url === "/" && req.method === "GET") {
     try {
       const rows = await getMusicItems();
